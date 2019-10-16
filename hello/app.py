@@ -92,3 +92,4 @@ def set_cookie(name):
     return response
 
 from flask import request
+@app.route('/get_cookie')
