@@ -1,3 +1,3 @@
-my_flask
-.vscode
-.env
+/my_flask
+/.vscode
+/.env
