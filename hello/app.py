@@ -84,6 +84,7 @@ def my_jsonify():
     #return jsonify(message='Error!'),500
 
 
+#生成重定向响应设置Cookie
 from flask import Flask,make_response
 @app.route('/set/<name>')
 def set_cookie(name):
@@ -91,5 +92,51 @@ def set_cookie(name):
     response.set_cookie('name',name)
     return response
 
-from flask import request
-@app.route('/get_cookie')
+#Session
+#设置秘钥
+app.secret_key='secret string'
+#或者写入.env中:
+# SECRET_KEY=secret string
+#然后在程序中使用os模块的getenv()调用
+#app.secret_key=os.getenv('SECRET_KEY','secret string')
+#getenv()第二个参数作用是如果没有获取到对应的环境变量则使用第二个参数
+
+#使用Session模拟用户认证
+from flask import redirect,url_for,session
+@app.route('/my_session')
+def login():
+    session['logged_in'] =True #写入Session,Session对象可以像字典一样操作
+    return redirect(url_for('redirect_session'))#重定向到redirect_session视图
+
+
+#根据用户认证状态返回不同的内容
+from flask import request,session
+@app.route('/redirect_session')
+def redirect_session():
+    name = request.args.get('name')
+    if name is None:
+        name = request.cookies.get('name','备用值')#这行没什么卵用
+        response = "hello %s" %name
+    if 'logged_in' in session:
+        response +='[Authenticated]'
+    else:
+        response += "[Not Authenticated]"
+    return response
+
+
+#模拟用户登录
+from flask import session,abort
+@app.route('/admin')
+def admin():
+    if 'logged_in' not in session:
+        abort(403)
+    return "<h1>欢迎登录</h1>"
+
+#模拟用户登出
+from flask import  session
+@app.route('/logout')
+def logout():
+    if 'logged_in' in session:
+        session.pop('logged_in')
+    return redirect(url_for('redirect_session'))
+
