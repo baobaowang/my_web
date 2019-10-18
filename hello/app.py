@@ -140,3 +140,31 @@ def logout():
         session.pop('logged_in')
     return redirect(url_for('redirect_session'))
 
+
+
+
+#重定向回上一个页面
+@app.route('/foo')
+def foo():
+    return '<h1>Foo Page</h1> <a href="%s">Do Something</a>' % url_for('do_something',next=request.full_path)
+
+@app.route('/bar')
+def bar():
+    return '<h1>Bar Page</h1> <a href="%s">Do Something</a>' % url_for('do_something',next=request.full_path)
+
+# @app.route('/do_something')
+# def do_something():
+#     return redirect(request.args.get('next',url_for('hello')))
+
+def redirect_back(default='hello',**kwargs):
+    for target in request.args.get('next'),request.referrer:
+        if target:
+            return redirect(target)
+        return redirect(url_for(default, **kwargs))
+
+@app.route('/do_something')
+def do_something():
+    return redirect_back()
+
+
+
