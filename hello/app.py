@@ -144,27 +144,49 @@ def logout():
 
 
 #重定向回上一个页面
+#####################################################################
+
 @app.route('/foo')
 def foo():
     return '<h1>Foo Page</h1> <a href="%s">Do Something</a>' % url_for('do_something',next=request.full_path)
 
 @app.route('/bar')
 def bar():
-    return '<h1>Bar Page</h1> <a href="%s">Do Something</a>' % url_for('do_something',next=request.full_path)
+    return '<h1>Bar Page</h1> <a href="%s">Do Something</a>' % url_for('do_something',next=request.full_path)#request.full_path是相对url,这里是"/bar?"
 
 # @app.route('/do_something')
 # def do_something():
 #     return redirect(request.args.get('next',url_for('hello')))
 
+"""
+#在下面url安全验证中重写此函数
 def redirect_back(default='hello',**kwargs):
     for target in request.args.get('next'),request.referrer:
         if target:
             return redirect(target)
         return redirect(url_for(default, **kwargs))
+"""
 
 @app.route('/do_something')
 def do_something():
     return redirect_back()
 
+#########################################################################
 
+#对URL进行安全验证,判断url是否属于程序内部
+from urllib.parse import urlparse,urljoin
+from flask import request
+def is_safe_url(target):
+    ref_url=urlparse(request.host_url)
+    test_url = urlparse(urljoin(request.host_url,target))
+    return test_url.scheme in ('http','https') and ref_url.netloc == test_url.netloc
+#ruleparse()将URL分解为6个片段:scheme是协议，netloc是服务器地址，path是相对路径，params是参数，query是查询的条件。
+#urljoin()将基地址和相对地址拼接
 
+def redirect_back(default='hello',**kwargs):
+    for target in request.args.get('next'),request.referrer:
+        if not target:
+            continue
+        if is_safe_url(target):
+            return redirect(target)
+    return redirect(url_for(default,**kwargs))
