@@ -20,7 +20,11 @@ from flask import render_template
 def watchlist():
     return render_template('watchlist.html',user=user,movies=movies)
 
+from flask import Flask,render_template
 
+@app.errorhandler(404)
+def page_not_found(e):
+    return render_template('errors/404.html'),404
 
 
 
