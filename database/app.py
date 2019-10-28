@@ -59,8 +59,22 @@ def index():
     return render_template('index.html',notes=notes)
 
 #Update
+#更新表单
 class EditNoteForm(FlaskForm):
     body = TextAreaField('Body',validators=[DataRequired()])
+    submit = SubmitField('Update')
+
+@app.route('/edit/<int:note_id>',methods=['GET','POST'])
+def edit_note(note_id):
+    form = EditNoteForm()
+    note = Note.query.get(note_id)
+    if form.validate_on_submit():
+        note.body = form.body.data
+        db.session.commit()
+        flash('笔记已更新')
+        return redirect(url_for('index'))
+    form.body.data = note.body
+    return render_template('edit_note.html',form = form )
 
 
 
