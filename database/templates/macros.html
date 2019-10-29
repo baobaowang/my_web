@@ -1,9 +1,37 @@
 {% macro form_field(field) %}
     {{ field.label }}<br>
-    {{ field(**kwargs) }}<br>
-    {% if field.errors -%}
-        {% for error in field.errors -%}
+    {% if field.flags.required %}   
+        {{ field(required='required', **kwargs) }}<br>
+    {% else %}
+        {{ field(**kwargs) }}<br>
+    {% endif %}
+    {% if field.errors %}
+        {% for error in field.errors %}
             <small class="error">{{ error }}</small><br>
-        {%- endfor %}
-    {%- endif %}
+        {% endfor %}
+    {% endif %}
 {% endmacro %}
+
+
+{#
+    <form method="post">
+        <input id="csrf_token" name="csrf_token" type="hidden" value="IjliMDkyYzg3ZmUwN2RjZDZhY2ZiNDQ0NThhYmU2MmI4MzQ2ZmY0ODQi.Xbg7nw.xuYoAIhG3F_jDmTEy0A9zEx_er0">
+        
+        <label for="body">Body</label><br>
+        <textarea cols="50" id="body" name="body" required="" rows="5"></textarea><br>
+        
+    
+        <input id="submit" name="submit" type="submit" value="Save"><br>
+    </form>
+    #}
+
+
+
+
+
+
+
+
+
+
+

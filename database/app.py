@@ -43,7 +43,7 @@ def new_note():
         body = form.body.data
         note = Note(body=body)
         db.session.add(note)
-        db.session.commti()
+        db.session.commit()
         flash('这条笔记已经保存')
         return  redirect(url_for('index'))
     return render_template('new_note.html',form=form)
