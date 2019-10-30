@@ -55,8 +55,10 @@ def new_note():
 #Read
 @app.route('/')
 def index():
+
     notes = Note.query.all()
-    return render_template('index.html',notes=notes)
+    form = DeleteNoteForm()
+    return render_template('index.html',notes=notes,form = form)
 
 #Update
 #更新表单
@@ -76,6 +78,20 @@ def edit_note(note_id):
     form.body.data = note.body
     return render_template('edit_note.html',form = form )
 
+#delate
+#删除表单
+class DeleteNoteForm(FlaskForm):
+    submit = SubmitField('Delete')
 
-
+@app.route('/delete/<int:note_id>',methods=['POST'])
+def delete_note(note_id):
+    form = DeleteNoteForm()
+    if form.validate_on_submit():
+        note = Note.query.get(note_id)
+        db.session.delete(note)
+        db.session.commit()
+        flash('笔记已经删除')
+    else:
+        abort(400)
+    return redirect(url_for('index'))
     
