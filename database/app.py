@@ -55,7 +55,6 @@ def new_note():
 #Read
 @app.route('/')
 def index():
-
     notes = Note.query.all()
     form = DeleteNoteForm()
     return render_template('index.html',notes=notes,form = form)
@@ -95,3 +94,50 @@ def delete_note(note_id):
         abort(400)
     return redirect(url_for('index'))
     
+#配置flask shell上下文
+
+@app.shell_context_processor
+def make_shell_context():
+    return dict(db=db,Note = Note,Author=Author,Article=Article) #等同于{'db':db,'Note':Note}
+# (my_flask) wang@wang:~/my_web$ flask shell
+# Python 3.6.8 (default, Oct  7 2019, 12:59:55) 
+# [GCC 8.3.0] on linux
+# App: app [development]
+# Instance: /home/wang/my_web/database/instance
+# >>> db
+# <SQLAlchemy engine=sqlite://///home/wang/my_web/database/data.db>
+# >>> Note
+# <class 'app.Note'>
+# >>> 
+
+#一对多:
+#第一步:定义外键,在"多"的一侧
+#第二步:定义关系属性,在"一"的一侧
+#第三步:建立关系
+class Author(db.Model):     #作者
+    id = db.Column(db.Integer,primary_key=True)
+    name = db.Column(db.String(70),unique=True)
+    phone = db.Column(db.String(20))
+    articles = db.relationship('Article')#使用relationship()关系函数定义关系属性,这个关系属性返回多个记录(集合关系属性).
+    #第一个参数为关系另一侧的模型名称,它将两个表建立关系,
+    #被调用时,Sqlalchemy找到关系的另一侧的外键字段,然后反向查询article表中author_id值为当前表主键值的记录,返回包含这些记录的列表
+class Article(db.Model):    #文章
+    id = db.Column(db.Integer,primary_key=True)
+    title = db.Column(db.String(50),index=True)
+    body = db.Column(db.Text)
+    author_id = db.Column(db.Integer,db.ForeignKey('author.id'))#定义外键,传入的值是另一侧的表名和主键字段名
+
+
+
+#这里运行错误,明天找到原因
+# >>> foo=Author(name="Foo")
+# >>> spam=Article(title="Span")
+# >>> ham = Article(title="Ham")
+
+# >>> db.session.add(foo)
+# >>> db.session.add(spam)
+# >>> db.session.add(ham)
+# >>> foo.articles.append(spam)
+# >>> foo.articles.append(ham)
+
+# >>> db.session.commit()
