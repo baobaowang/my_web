@@ -98,7 +98,8 @@ def delete_note(note_id):
 
 @app.shell_context_processor
 def make_shell_context():
-    return dict(db=db,Note = Note,Author=Author,Article=Article) #等同于{'db':db,'Note':Note}
+    return dict(db=db,Note = Note,Author=Author,Article=Article,
+    Writer=Writer,Book=Book) #等同于{'db':db,'Note':Note}
 # (my_flask) wang@wang:~/my_web$ flask shell
 # Python 3.6.8 (default, Oct  7 2019, 12:59:55) 
 # [GCC 8.3.0] on linux
@@ -128,16 +129,84 @@ class Article(db.Model):    #文章
     author_id = db.Column(db.Integer,db.ForeignKey('author.id'))#定义外键,传入的值是另一侧的表名和主键字段名
 
 
-
-#这里运行错误,明天找到原因
 # >>> foo=Author(name="Foo")
-# >>> spam=Article(title="Span")
+# >>> spam=Article(title="Spam")
 # >>> ham = Article(title="Ham")
 
 # >>> db.session.add(foo)
 # >>> db.session.add(spam)
 # >>> db.session.add(ham)
-# >>> foo.articles.append(spam)
+# >>> foo.articles.append(spam)#建立关系,或者spam.author_id = 1
 # >>> foo.articles.append(ham)
 
+# >>> db.session.commit()#提交到数据库
+
+#一对多的双向关系
+#1. 定义外键,在"多"的一侧
+#2. 定义关系属性,在两侧,并且使用back_populates定义反向引用来连接另一侧,参数值为另一侧的关系属性名
+#3. 建立关系
+class Writer(db.Model):#作者
+    id = db.Column(db.Integer,primary_key=True)
+    name = db.Column(db.String(70),unique = True)
+    books = db.relationship('Book',back_populates='writer')
+
+class Book(db.Model):
+    id = db.Column(db.Integer,primary_key=True)
+    name = db.Column(db.String(50),index=True)
+    writer_id = db.Column(db.Integer,db.ForeignKey('writer.id'))
+    writer = db.relationship('Writer',back_populates='books')
+
+# >>> king = Writer(name='Stephen King')
+# >>> carrie = Book(name='Carrit')
+# >>> it = Book(name='IT')
+# >>> db.session.add(king)
+# >>> db.session.add(carrie)
+# >>> db.session.add(it)
 # >>> db.session.commit()
+
+# >>> carrie.writer = king #建立关系
+# >>> carrie.writer
+# <Writer 1>
+# >>> it.writer = king  #建立关系
+# >>> king.books
+# [<Book 1>, <Book 2>]
+
+
+
+#多对多
+
+#关联表
+#使用db.Table()定义关联表,第一个参数是关联表名,
+association_table = db.Table('association',
+                            db.Column('student_id',db.Integer,db.ForeignKey('student.id')),
+                            db.Column('teacher_id',db.Integer,db.ForeignKey('teacher.id'))
+                            )
+
+class Student(db.Model):#学生表
+    id = db.Column(db.Integer,primary_key=True)
+    name = db.Column(db.String(70),unique=True)
+    grade = db.Column(db.String(20))
+    teachers = db.relationship('Teacher',
+                        secondary=association_table,
+                        back_populates='students')
+
+
+class Teacher(db.Model):#教师表
+    id = db.Column(db.Integer,primary_key=True)
+    name = db.Column(db.string(70),unique=True)
+    office = db.Column(db.String(20))
+    students = db.relationship('Student',
+                            secondary=association_table,
+                            back_populates='teachers')
+
+
+
+
+
+#使用flask-migrate迁移数据库
+#虚拟环境下,pip3 install flask-migrate
+
+
+
+
+
