@@ -17,7 +17,7 @@ class Category(db.Model): #分类
     name = db.Column(db.String(30),unique = True)
     posts = db.relationship('Post',back_populates='category')#文章和分类
 
-class Past(db.Model):# 文章模型
+class Post(db.Model):# 文章模型
     id = db.Column(db.Integer,primary_key = True)
     title = db.Column(db.String(60))
     body = db.Column(db.Text)
@@ -42,7 +42,6 @@ class Comment(db.Model):# 评论
     replied_id = db.Column(db.Integer,db.ForeignKey('comment.id'))
     replied = db.relationship('Comment',back_populates='replies',remote_side = [id])
     replies =db.relationship('Commit',back_populates = 'replied',cascade = 'all')
-
 
 
 
