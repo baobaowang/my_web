@@ -38,3 +38,14 @@ class Comment(db.Model):# 评论
     timestamp = db.Column(db.DataTime,default = datetime.utcnow,index = True)
     post_id = db.Column(db.Integer,db.ForeignKey('post.id'))
     post = db.relationship('Post',back_populates = 'comments')
+    #邻接列表关系
+    replied_id = db.Column(db.Integer,db.ForeignKey('comment.id'))
+    replied = db.relationship('Comment',back_populates='replies',remote_side = [id])
+    replies =db.relationship('Commit',back_populates = 'replied',cascade = 'all')
+
+
+
+
+
+
+
