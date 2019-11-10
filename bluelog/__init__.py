@@ -60,6 +60,48 @@ def register_errors(app):
     def internal_server_error(e):
         return render_template('errors/500.html'), 500
 
-
+import click
 def register_commands(app):
-    pass
+    #生成博客虚拟数据
+    @app.cli.command()
+    @click.option('--category',default = 10,help = '类别的数量,默认是10.')
+    @click.option('--post',default = 50,help = '帖子的数量,默认是50.')
+    @click.option('--comment',default = 500,help='回复的数量,默认是500.')
+    def forge(category, post,comment):
+        """生成类别,帖子,回复的虚拟数据"""
+        from bluelog.fakes import fake_admin, fake_categories, fake_posts, fake_comments
+        db.drop_all()
+        db.create_all()
+
+        click.echo('生成管理员...')
+        fake_admin()
+
+        click.echo('生成 %d  类别 ' %category)
+        fake_categories(category)
+
+        click.echo('Generating %d posts...' %post)
+        fake_posts(post)
+
+        click.echo('generating %d comments...' %comment)
+        fake.comments(comment)
+
+        click.echo('Done.')
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
