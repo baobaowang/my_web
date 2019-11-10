@@ -55,8 +55,59 @@ from faker import Faker
 from bluelog.models import Comment
 from bluelog.extensions import db
 
-
-
+fake = Faker()
+def fake_comments(count = 500):
+    for i in range(count):
+        comment = Comment(
+            author = fake.name(),
+            email = fake.email(),
+            site = fake.url(),
+            body = fake.sentence(),
+            timestamp = fake.date_time_this_year(),
+            reviewed = True,
+            post = Post.query.get(random.randint(1,Post.query.count()   ))
+        )
+        db.session.add(comment)
+    salt = int(count * 0.1)
+    for i in range(salt):
+        #未审核评论
+        comment = Comment(
+            author = fake.name(),
+            email = fake.email(),
+            site = fake.url(),
+            body = fake.sentence(),
+            timestamp = fake.date_time_this_year(),
+            reviewed = True,
+            post = Post.query.get(random.randint(1, Post.query.count()      ))
+        )
+        db.session.add(comment)
+        #管理员发表的评论
+        comment = Comment(
+            author = 'Mima Kirigoe',
+            email = 'mima@example.com',
+            site = 'example.com',
+            body = fake.sentence(),
+            timestamp = fake.date_time_this_year(),
+            from_admin = True,
+            reviewed = True,
+            post = Post.query.get(random.randint(1,Post.qury.count()    ))
+        )
+        db.session.add(comment)
+    db.session.commit()
+    for i in range(salt):
+        #回复
+        comment = Comment(
+            author = fake.name(),
+            email = fake.email(),
+            site = fake.url(),
+            body = fake.sentence(),
+            timestamp = fake.date_time_this_year(),
+            reviewed = True,
+            replied = Comment.query.get(random.randint(1, Comment.query.count() )),
+            post = Post,query.get(random.randint(1, Post.query.count()  )) 
+        )
+        db.session.add(comment)
+    db.session.commit()
 
 
 
