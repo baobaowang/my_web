@@ -6,6 +6,7 @@ from bluelog.extensions import bootstrap,db,moment,ckeditor,mail
 from bluelog.blueprints.admin import admin_bp
 from bluelog.blueprints.auth import auth_bp
 from bluelog.blueprints.blog import blog_bp
+from bluelog.models import Admin,Category,Post,Comment#flask shell上下文处理函数需要调用
 
 def create_app(config_name = None):
     if  config_name is None:
@@ -39,14 +40,18 @@ def register_blueprints(app):
     app.register_blueprint(admin_bp,url_prefix='/admin')
     app.register_blueprint(auth_bp,url_prefix='/auth')
 
-def register_shell_context(app):
+def register_shell_context(app):#shell上下文处理函数
     @app.shell_context_processor
     def make_shell_context():
-        return dict(db=db)
+        return dict(db=db,Admin=Admin,Post=Post,Comment=Comment,Category=Category)
 
 
-def register_template_context(app):
-    pass
+def register_template_context(app):#模板上下文处理
+    @app.context_processor
+    def make_template_context():
+        admin = Admin.query.first()
+        categories = Category.query.order_by(Category.name).all()
+        return dict(admin = admin,categories = categories)
 
 def register_errors(app):
     @app.errorhandler(400)
