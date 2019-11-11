@@ -84,10 +84,12 @@ def register_commands(app):
         fake_posts(post)
 
         click.echo('generating %d comments...' %comment)
-        fake.comments(comment)
+        fake_comments(comment)
 
         click.echo('Done.')
-
+    #为了正常生成数据,顺序必须是管理员--->分类--->文章--->评论
+    #使用flask forge生成虚拟数据
+    #使用 flask forge --categort=20 --post=200 --comment=1000           生成自定义数量的虚拟数据
 
 
 

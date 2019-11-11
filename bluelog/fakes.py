@@ -44,7 +44,7 @@ def fake_posts(count = 50):
         post = Post(
             title = fake.sentence(),
             body = fake.text(2000),
-            category = Category.query.get(random.randint(1,Category.query.count()   ))
+            category = Category.query.get(random.randint(1,Category.query.count()   )),
             timestamp = fake.date_time_this_year()
         )
         db.session.add(post)
@@ -90,7 +90,7 @@ def fake_comments(count = 500):
             timestamp = fake.date_time_this_year(),
             from_admin = True,
             reviewed = True,
-            post = Post.query.get(random.randint(1,Post.qury.count()    ))
+            post = Post.query.get(random.randint(1,Post.query.count()    ))
         )
         db.session.add(comment)
     db.session.commit()
@@ -104,7 +104,7 @@ def fake_comments(count = 500):
             timestamp = fake.date_time_this_year(),
             reviewed = True,
             replied = Comment.query.get(random.randint(1, Comment.query.count() )),
-            post = Post,query.get(random.randint(1, Post.query.count()  )) 
+            post = Post.query.get(random.randint(1, Post.query.count()  )) 
         )
         db.session.add(comment)
     db.session.commit()
