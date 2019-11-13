@@ -1,4 +1,4 @@
-from flask import Flask,request,redirect,url_for
+from flask import Flask,request,redirect,url_for,render_template
 app = Flask(__name__)
 
 @app.route('/')
@@ -223,8 +223,15 @@ def load_post():
     return generate_lorem_ipsum(n=1)
 
 
+#模板自定义上下文  (在.py中定义个可以在模板使用的全局变量)
+@app.context_processor
+def inject_var():
+    foo = '我是用@app.context_processor装饰器自定义的模板全局变量'
+    return dict(foo = foo)
 
-
+@app.route('/my_var')
+def my_inject_var():
+    return render_template('index.html')
 
 
 
