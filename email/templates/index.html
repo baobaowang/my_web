@@ -1,9 +1,28 @@
-<!DOCTYPE html>
-<html>
-    <head>
+{% extends 'base.html' %}
+{%from 'macros.html' import form_field %}
 
-    </head>
-    <body>
-        {%%}
-    </body>
-</html>
+{%block body%}
+    <h2>给自己发送一个邮件</h2>
+    <p></p>
+    <form method="POST">
+            {{ form.csrf_token }}
+            {{form_field(form.name)}}
+            {{ form_field(form.email, rows=5, cols=50) }}<br>
+            {{form_field(form.submit)}}
+    </form>
+{%endblock%}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

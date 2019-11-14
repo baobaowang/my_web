@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        {%block title%} 邮件 {% endblock %}
+    </head>
+    <body>
+        {% for message in get_flashed_messages()%}
+            {{message}}
+        {%endfor %}
+        {% block body %}
+        {% endblock %}
+    </body>
+</html>
