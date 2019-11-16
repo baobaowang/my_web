@@ -31,6 +31,11 @@ class SubscribeForm(FlaskForm):
 #subject主题   recipients为收件人邮件地址的列表  body为正文
 def send_mail(subject,to,body):
     message = Message(subject,recipients=[to],body = body) #邮件通过Message类构建
+    message.body = '纯文本正文'     #message.body   纯文本正文
+    message.html = '<p style="color:red">我是html正文</p>'#html的邮件,
+      #如果用户邮件系统不支持html,则显示纯文本正文,所以应该编写两种格式的邮件
+    #或者使用模板发送邮件
+    #message.html = render_template('邮件.html')
     mail.send(message)          #调用maile.send()发送邮件
 
 @app.route('/',methods=['GET','POST'])
@@ -42,3 +47,7 @@ def index():
         flash('提交成功')
         return redirect(url_for('index'))
     return render_template('index.html',form = form )
+
+
+
+
