@@ -1,5 +1,5 @@
 from flask import Blueprint,render_template
-
+from bluelog.models import Post
 blog_bp = Blueprint('blog',__name__)
 
 @blog_bp.route('/')
