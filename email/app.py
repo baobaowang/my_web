@@ -43,10 +43,40 @@ def index():
     form = SubscribeForm()
     if form.validate_on_submit():
         email = form.email.data
-        send_mail('订阅成功',email,'巧巧吃屁') #调用通用发信函数
+        _saync_send_mail('订阅成功',email,'邮件正文') #调用通用发信函数
         flash('提交成功')
         return redirect(url_for('index'))
     return render_template('index.html',form = form )
+
+
+
+
+
+#异步发送邮件   没搞懂
+from threading import Thread
+
+def _send_async_mail(app,message):
+    with app.app_context():#手动激活程序上下文
+        mail.send(message)
+
+def _saync_send_mail(subject,to,body):
+    message = Message(subject,recipients=[to],body=body)
+    message.body = '纯文本正文'     #message.body   纯文本正文
+    message.html = '<p style="color:red">我是html正文</p>'#html的邮件,
+    thr = Thread(target=_send_async_mail,args=[app,message])
+    #target  和 args是什么参数?
+    thr.start()
+    return thr
+
+
+
+
+
+
+
+
+
+
 
 
 
