@@ -1,7 +1,7 @@
 #生成虚拟数据
 
 #生成虚拟管理员信息
-from bluelog.models import Admin, Category, Post, Comment,
+from bluelog.models import Admin, Category, Post, Comment
 from bluelog.extensions import db
 def fake_admin():
     admin = Admin(
